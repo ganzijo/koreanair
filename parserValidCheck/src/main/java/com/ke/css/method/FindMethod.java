@@ -10,13 +10,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ke.css.cimp.common.XML_Maker;
-import com.ke.css.cimp.vo.MsgVo;
+import com.ke.css.cimp.vo.DocVo;
 import com.ke.css.cimp.vo.ObjectVo;
 
 import parserValidCheck.FNADataParsingTest;
 
 public class FindMethod {
-	private MsgVo msgVo = new MsgVo();
+	private DocVo docVo = new DocVo();
 	private ObjectVo objVo = new ObjectVo();
 
 	public String callMethod(String data) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -27,15 +27,15 @@ public class FindMethod {
 			divideData(data);
 		} else
 			divideData(parsedData);
-		Class<?> ruleCls = Class.forName("com.ke.css.cimp." + msgVo.getMsgName() + "." + msgVo.getMsgId() + ".Rule");
+		Class<?> ruleCls = Class.forName("com.ke.css.cimp." + docVo.getDocName() + "." + docVo.getDocIdArr() + ".Rule");
 		Class<?> parserCls = Class
-				.forName("com.ke.css.cimp." + msgVo.getMsgName() + "." + msgVo.getMsgId() + ".Parser");
+				.forName("com.ke.css.cimp." + docVo.getDocName() + "." + docVo.getDocIdArr() + ".Parser");
 		Class<?> xmlDisplayerCls = Class
-				.forName("com.ke.css.cimp." + msgVo.getMsgName() + "." + msgVo.getMsgId() + ".XmlDisplayer");
+				.forName("com.ke.css.cimp." + docVo.getDocName() + "." + docVo.getDocIdArr() + ".XmlDisplayer");
 		Class<?> visitorCls = Class
-				.forName("com.ke.css.cimp." + msgVo.getMsgName() + "." + msgVo.getMsgId() + ".Visitor");
+				.forName("com.ke.css.cimp." + docVo.getDocName() + "." + docVo.getDocIdArr() + ".Visitor");
 		objVo.setParserMethod(parserCls.getMethod("parse", String.class, String.class));
-		objVo.setParserObj(objVo.getParserMethod().invoke(parserCls, "MESSAGE", msgVo.getFullMsg()));
+		objVo.setParserObj(objVo.getParserMethod().invoke(parserCls, "MESSAGE", docVo.getDocFull()));
 
 		XML_Maker XML_FHL = new XML_Maker();
 
@@ -74,20 +74,20 @@ public class FindMethod {
 	}
 
 	public void generalHeader(String[] dataArr) {
-		msgVo.setDocMsgId(dataArr[2].split("/"));
-		msgVo.setMsgName(msgVo.getDocMsgId()[0].toLowerCase());
-		msgVo.setMsgVer(msgVo.getDocMsgId()[1].toLowerCase());
-		msgVo.setMsgId(msgVo.getMsgName() + msgVo.getMsgVer());
-		System.out.println("msgId : " + msgVo.getMsgId());
+		docVo.setDocIdArr(dataArr[2].split("/"));
+		docVo.setDocName(docVo.getDocIdArr()[0].toLowerCase());
+		docVo.setDocVer(docVo.getDocIdArr()[1].toLowerCase());
+		docVo.setDocId(docVo.getDocName() + docVo.getDocVer());
+		System.out.println("DocId : " + docVo.getDocIdArr());
 		System.out.println("General Header");
 	}
 
 	public String multiRowHeader(String[] dataArr, int lastLine) {
-		msgVo.setDocMsgId(dataArr[lastLine + 1].split("/"));
-		msgVo.setMsgName(msgVo.getDocMsgId()[0].toLowerCase());
-		msgVo.setMsgVer(msgVo.getDocMsgId()[1].toLowerCase());
-		msgVo.setMsgId(msgVo.getMsgName() + msgVo.getMsgVer());
-		System.out.println("msgId : " + msgVo.getMsgId());
+		docVo.setDocIdArr(dataArr[lastLine + 1].split("/"));
+		docVo.setDocName(docVo.getDocIdArr()[0].toLowerCase());
+		docVo.setDocVer(docVo.getDocIdArr()[1].toLowerCase());
+		docVo.setDocId(docVo.getDocName() + docVo.getDocVer());
+		System.out.println("DocId : " + docVo.getDocIdArr());
 		System.out.println("MultiRow Header");
 		String modify = dataArr[0] + "\r\n" + dataArr[lastLine];
 		for (int i = lastLine + 1; i < dataArr.length; i++) {
@@ -98,11 +98,11 @@ public class FindMethod {
 	}
 
 	public String dummyHeader(String[] dataArr) {
-		msgVo.setDocMsgId(dataArr[0].split("/"));
-		msgVo.setMsgName(msgVo.getDocMsgId()[0].toLowerCase());
-		msgVo.setMsgVer(msgVo.getDocMsgId()[1].toLowerCase());
-		msgVo.setMsgId(msgVo.getMsgName() + msgVo.getMsgVer());
-		System.out.println("msgId : " + msgVo.getMsgId());
+		docVo.setDocIdArr(dataArr[0].split("/"));
+		docVo.setDocName(docVo.getDocIdArr()[0].toLowerCase());
+		docVo.setDocVer(docVo.getDocIdArr()[1].toLowerCase());
+		docVo.setDocId(docVo.getDocName() + docVo.getDocVer());
+		System.out.println("DocId : " + docVo.getDocIdArr());
 		System.out.println("Dummy Header");
 		String dummyData = "QK XXDUMMY" + "\r\n" + ".XXDUMMY";
 
@@ -114,13 +114,13 @@ public class FindMethod {
 		return modify;
 	}
 
-	public String getMsgType(String msgName) {
-		if (msgName.equals("fhl") || msgName.equals("fwb") || msgName.equals("ffm") || msgName.equals("ffr")
-				|| msgName.equals("fbl") || msgName.equals("fna") || msgName.equals("fum")) {
+	public String getDocType(String DocName) {
+		if (DocName.equals("fhl") || DocName.equals("fwb") || DocName.equals("ffm") || DocName.equals("ffr")
+				|| DocName.equals("fbl") || DocName.equals("fna") || DocName.equals("fum")) {
 			return "CIMP";
-		} else if (msgName.equals("")) {
+		} else if (DocName.equals("")) {
 			return "AHM";
-		} else if (msgName.equals("")) {
+		} else if (DocName.equals("")) {
 			return "AMS";
 		}
 		return null;
@@ -133,77 +133,77 @@ public class FindMethod {
 	public void divideData(String data) {
 		String[] parsedArr = data.split("\r\n");
 		String ifHubRefKey = getGUID();
-		String msgType = getMsgType(msgVo.getMsgName());
-		String msgSubType = msgVo.getMsgName();
-		String msgReceiver = parsedArr[0];
-		System.out.println("msgReceiver : " + msgReceiver);
-		String msgSender = parsedArr[1].substring(1, 8);
+		String DocType = getDocType(docVo.getDocName());
+		String DocSubType = docVo.getDocName();
+		String DocReceiver = parsedArr[0];
+		System.out.println("DocReceiver : " + DocReceiver);
+		String DocSender = parsedArr[1].substring(1, 8);
 		String sep_slant = "/";
-		String[] getErrMsg = null;
-		String recvMsgDetail = "";
-		String recvFnaErrMsgType = "";
-		String recvFnaMsgVer = "";
+		String[] getErrDoc = null;
+		String recvDocDetail = "";
+		String recvFnaErrDocType = "";
+		String recvFnaDocVer = "";
 		String recvFnaMawbNumber = "";
 		String recvFnaHawbNumber = "";
-		msgVo.setMsgHeader(ifHubRefKey + sep_slant + msgType + sep_slant + msgSubType.toUpperCase() + sep_slant
-				+ msgReceiver + sep_slant + msgSender + "\r\n");
+		docVo.setDocHeader(ifHubRefKey + sep_slant + DocType + sep_slant + DocSubType.toUpperCase() + sep_slant
+				+ DocReceiver + sep_slant + DocSender + "\r\n");
 
-		if (msgSubType.equals("fna")) {
+		if (DocSubType.equals("fna")) {
 			for (int i = 0; i < parsedArr.length; i++) {
 				if (i < 2) {
 				} else if (i == 2) {
-					msgVo.setMsgBody(parsedArr[i]);
+					docVo.setDocBody(parsedArr[i]);
 				} else if (i > 2 && i < 5) {
-					msgVo.setMsgBody(msgVo.getMsgVer() + "\r\n" + parsedArr[i]);
+					docVo.setDocBody(docVo.getDocVer() + "\r\n" + parsedArr[i]);
 				} else if (i == 5) {
-					getErrMsg = parsedArr[i].split("/");
-					recvFnaErrMsgType = getErrMsg[0];
-					recvFnaMsgVer = getErrMsg[1];
-					recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+					getErrDoc = parsedArr[i].split("/");
+					recvFnaErrDocType = getErrDoc[0];
+					recvFnaDocVer = getErrDoc[1];
+					recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 				} else if (i == 6) {
-					if (recvFnaErrMsgType.equals("FHL")) {
+					if (recvFnaErrDocType.equals("FHL")) {
 						recvFnaMawbNumber = parsedArr[i].substring(4, 16);
-						recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+						recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 					} else {
 						recvFnaMawbNumber = parsedArr[i].substring(0, 12);
-						recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+						recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 					}
 				} else if (i == 7) {
-					if (recvFnaErrMsgType.equals("FHL")) {
+					if (recvFnaErrDocType.equals("FHL")) {
 						recvFnaHawbNumber = parsedArr[i].substring(4, 13);
-						recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+						recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 					} else {
 						recvFnaHawbNumber = "";
-						recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+						recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 					}
 				} else if (i > 5) {
-					recvMsgDetail = recvMsgDetail + parsedArr[i] + "\r\n";
+					recvDocDetail = recvDocDetail + parsedArr[i] + "\r\n";
 				}
 			}
 
 			if (recvFnaHawbNumber.equals("")) {
-				msgVo.setMsgBody(msgVo.getMsgBody() + "\r\n" + recvFnaErrMsgType + sep_slant + recvFnaMsgVer + sep_slant
-						+ recvFnaMawbNumber + "\r\n" + recvMsgDetail);
+				docVo.setDocBody(docVo.getDocBody() + "\r\n" + recvFnaErrDocType + sep_slant + recvFnaDocVer + sep_slant
+						+ recvFnaMawbNumber + "\r\n" + recvDocDetail);
 			} else {
-				msgVo.setMsgBody(msgVo.getMsgBody() + "\r\n" + recvFnaErrMsgType + sep_slant + recvFnaMsgVer + sep_slant
-						+ recvFnaMawbNumber + sep_slant + recvFnaHawbNumber + "\r\n" + recvMsgDetail);
+				docVo.setDocBody(docVo.getDocBody() + "\r\n" + recvFnaErrDocType + sep_slant + recvFnaDocVer + sep_slant
+						+ recvFnaMawbNumber + sep_slant + recvFnaHawbNumber + "\r\n" + recvDocDetail);
 			}
 		} else {
 			for (int i = 0; i < parsedArr.length; i++) {
 				if (i < 2) {
 				} else if (i == 2) {
-					msgVo.setMsgBody(parsedArr[i]);
+					docVo.setDocBody(parsedArr[i]);
 				} else
-					msgVo.setMsgBody(msgVo.getMsgBody() + "\r\n" + parsedArr[i]);
+					docVo.setDocBody(docVo.getDocBody() + "\r\n" + parsedArr[i]);
 			}
 		}
-		msgVo.setMsgBody(msgVo.getMsgBody() + "\r\n");
-		msgVo.setFullMsg(msgVo.getMsgHeader() + msgVo.getMsgBody());
-		System.out.println("msgHeader : " + msgVo.getMsgHeader());
-		System.out.println("msgBody : " + msgVo.getMsgBody());
+		docVo.setDocBody(docVo.getDocBody() + "\r\n");
+		docVo.setDocFull(docVo.getDocHeader() + docVo.getDocBody());
+		System.out.println("DocHeader : " + docVo.getDocHeader());
+		System.out.println("DocBody : " + docVo.getDocBody());
 	}
 
-	public String[] getProperties(String errMsgType) {
+	public String[] getProperties(String errDocType) {
 		String path = FNADataParsingTest.class.getResource("").getPath();
 		String filePath = path + "config.properties";
 		String[] getPropData = new String[2];
@@ -215,8 +215,8 @@ public class FindMethod {
 			prop.load(inputStream);
 
 			// Getting properties
-			getPropData[0] = prop.getProperty(errMsgType + ".mawb_number");
-			getPropData[1] = prop.getProperty(errMsgType + ".hawb_number");
+			getPropData[0] = prop.getProperty(errDocType + ".mawb_number");
+			getPropData[1] = prop.getProperty(errDocType + ".hawb_number");
 		} catch (IOException ex) {
 			System.out.println("Problem occurs when reading file !");
 			ex.printStackTrace();
